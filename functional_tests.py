@@ -1,12 +1,13 @@
-from selenium import webdriver
 import unittest
+
+from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 
 class NewVisitorTest(unittest.TestCase):
     def setUp(self):
         self.browser = webdriver.Firefox()
-        self.browser.implicitly_wait(3)#czeka 3s zanim zacznie testy jesli to potrzebne
+        #self.browser.implicitly_wait(3)#czeka 3s zanim zacznie testy jesli to potrzebne
 	
     def tearDown(self):
         self.browser.quit()
@@ -16,9 +17,9 @@ class NewVisitorTest(unittest.TestCase):
         self.browser.get('http://localhost:8000')
 
         #tytul strony i naglowek zawieraja slowo Listy
-        self.assertIn('Lista', self.browser.title)
+        self.assertIn('Listy', self.browser.title)
         header_text= self.browser.find_element_by_tag_name('h1').text
-        self.assertIn('Listy', header_text)
+        self.assertIn('Twoja lista', header_text)
 
         #zostaje zachecony do wpisania rzeczy do zrobienia
         inputbox = self.browser.find_element_by_id('id_new_item')
@@ -36,8 +37,10 @@ class NewVisitorTest(unittest.TestCase):
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertTrue(
-            any(row.text == '1: Kupić pawie prióra' for row in rows)
+            any(row.text == '1: Kupić pawie prióra' for row in rows),
+            msg = 'Nowy element nie znajduje się w tabeli.'
         )
+
 
         #na stronie dalej jest pole tekstowe do wpisania kolejnego zadania.
         #wpisuję 'Użyć pawich piór do zrobienia przynęty"
