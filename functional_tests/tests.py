@@ -1,10 +1,11 @@
 import unittest
 
+from django.test.testcases import LiveServerTestCase #dzieki niej django automatycznie tworzy baze testowa
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Firefox()
         # self.browser.implicitly_wait(3)#czeka 3s zanim zacznie testy jesli to potrzebne
@@ -19,7 +20,7 @@ class NewVisitorTest(unittest.TestCase):
 
     def test_can_start_a_list_and_retrieve_it_later(self):
         # wchodze glowna strone przegladarki
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
 
         # tytul strony i naglowek zawieraja slowo Listy
         self.assertIn('Listy', self.browser.title)
@@ -51,7 +52,3 @@ class NewVisitorTest(unittest.TestCase):
         self.check_for_row_in_list_table('1: Kupić pawie pióra')
         self.check_for_row_in_list_table('2: Użyć pawich piór do zrobienia przynęty')
         #self.fail('Zakonczenie testu!')
-
-
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')
