@@ -1,4 +1,5 @@
 import unittest
+import time
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -7,46 +8,43 @@ from selenium.webdriver.common.keys import Keys
 class NewVisitorTest(unittest.TestCase):
     def setUp(self):
         self.browser = webdriver.Firefox()
-        #self.browser.implicitly_wait(3)#czeka 3s zanim zacznie testy jesli to potrzebne
-	
+        # self.browser.implicitly_wait(3)#czeka 3s zanim zacznie testy jesli to potrzebne
+
     def tearDown(self):
         self.browser.quit()
 
     def test_can_start_a_list_and_retrieve_it_later(self):
-        #wchodze glowna strone przegladarki
+        # wchodze glowna strone przegladarki
         self.browser.get('http://localhost:8000')
 
-        #tytul strony i naglowek zawieraja slowo Listy
+        # tytul strony i naglowek zawieraja slowo Listy
         self.assertIn('Listy', self.browser.title)
-        header_text= self.browser.find_element_by_tag_name('h1').text
+        header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertIn('Twoja lista', header_text)
 
-        #zostaje zachecony do wpisania rzeczy do zrobienia
+        # zostaje zachecony do wpisania rzeczy do zrobienia
         inputbox = self.browser.find_element_by_id('id_new_item')
         self.assertEqual(
             inputbox.get_attribute('placeholder'),
             'Wpisz rzecz do zrobienia'
         )
 
-        #w polu tekstowym wpisuje "kupic pawie piora"
+        # w polu tekstowym wpisuje "kupic pawie piora"
         inputbox.send_keys('Kupić pawie pióra')
 
-        #po nacisnieciu klawisza enter strona zostala uaktualniona i wyswietla
-        #"1: Kupić pawie pióra" jako element listy rzeczy do zrobienia.
+        # po nacisnieciu klawisza enter strona zostala uaktualniona i wyswietla
+        # "1: Kupić pawie pióra" jako element listy rzeczy do zrobienia.
         inputbox.send_keys(Keys.ENTER)
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(
-            any(row.text == '1: Kupić pawie prióra' for row in rows),
-            msg = 'Nowy element nie znajduje się w tabeli.'
-        )
+        self.assertIn('1: Kupić pawie pióra', [row.text for row in rows])
+        self.assertIn('2: Użyć pawich piór do zrobienia przynęty.', [row.text for row in rows])
+        # na stronie dalej jest pole tekstowe do wpisania kolejnego zadania.
+        # wpisuję 'Użyć pawich piór do zrobienia przynęty"
 
+        # strona zostala uaktualniona i teraz wyswietla dwa elementy na liscie rzeczy do zrobienia
+        #self.fail('Zakonczenie testu!')
 
-        #na stronie dalej jest pole tekstowe do wpisania kolejnego zadania.
-        #wpisuję 'Użyć pawich piór do zrobienia przynęty"
-
-        #strona zostala uaktualniona i teraz wyswietla dwa elementy na liscie rzeczy do zrobienia
-        self.fail('Zakonczenie testu!')
 
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
