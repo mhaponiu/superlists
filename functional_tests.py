@@ -12,6 +12,11 @@ class NewVisitorTest(unittest.TestCase):
 
     def tearDown(self):
         self.browser.quit()
+    def check_for_row_in_list_table(self, row_text):
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+
+        self.assertIn(row_text, [row.text for row in rows])
 
     def test_can_start_a_list_and_retrieve_it_later(self):
         # wchodze glowna strone przegladarki
@@ -35,14 +40,17 @@ class NewVisitorTest(unittest.TestCase):
         # po nacisnieciu klawisza enter strona zostala uaktualniona i wyswietla
         # "1: Kupić pawie pióra" jako element listy rzeczy do zrobienia.
         inputbox.send_keys(Keys.ENTER)
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('1: Kupić pawie pióra', [row.text for row in rows])
-        self.assertIn('2: Użyć pawich piór do zrobienia przynęty.', [row.text for row in rows])
+        self.check_for_row_in_list_table('1: Kupić pawie pióra')
+
         # na stronie dalej jest pole tekstowe do wpisania kolejnego zadania.
         # wpisuję 'Użyć pawich piór do zrobienia przynęty"
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Użyć pawich piór do zrobienia przynęty')
+        inputbox.send_keys(Keys.ENTER)
 
         # strona zostala uaktualniona i teraz wyswietla dwa elementy na liscie rzeczy do zrobienia
+        self.check_for_row_in_list_table('1: Kupić pawie pióra')
+        self.check_for_row_in_list_table('2: Użyć pawich piór do zrobienia przynęty')
         #self.fail('Zakonczenie testu!')
 
 
