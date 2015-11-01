@@ -3,6 +3,7 @@ import unittest
 from django.test.testcases import LiveServerTestCase  # dzieki niej django automatycznie tworzy baze testowa
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import time
 
 
 class NewVisitorTest(LiveServerTestCase):
@@ -27,7 +28,7 @@ class NewVisitorTest(LiveServerTestCase):
         # tytul strony i naglowek zawieraja slowo Listy
         self.assertIn('Listy', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
-        self.assertIn('Twoja lista', header_text)
+        self.assertIn('Utwórz nową listę rzeczy do zrobienia', header_text)
 
         # zostaje zachecony do wpisania rzeczy do zrobienia
         inputbox = self.browser.find_element_by_id('id_new_item')
@@ -67,7 +68,7 @@ class NewVisitorTest(LiveServerTestCase):
         # Franek odwiedza strone glowna
         # nie znajduje zadnych sladow poprzedniej sesji
         self.browser.get(self.live_server_url)
-        page_text = self.browser.find_elements_by_tag_name('body').text
+        page_text = self.browser.find_elements_by_tag_name('body')
         self.assertNotIn('Kupić pawie pióra', page_text)
         self.assertNotIn('zrobienia przynęty', page_text)
 
@@ -86,3 +87,4 @@ class NewVisitorTest(LiveServerTestCase):
         page_text = self.browser.find_elements_by_tag_name('body').text
         self.assertNotIn('Kupić pawie pióra', page_text)
         self.assertIn('Kupić mleko', page_text)
+
