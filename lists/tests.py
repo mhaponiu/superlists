@@ -1,3 +1,4 @@
+from unittest.case import skip
 from django.http.request import HttpRequest
 from django.template.loader import render_to_string
 from django.test import TestCase
@@ -44,7 +45,7 @@ class HomePageTest(TestCase):
         response = home_page(request)
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/')
+        self.assertEqual(response['location'], '/lists/the-only-list-in-the-world/')
 
 
     def test_home_page_only_saves_items_when_necessary(self):
@@ -52,15 +53,16 @@ class HomePageTest(TestCase):
         home_page(request)
         self.assertEqual(Item.objects.count(), 0)
 
-    def test_home_page_displays_all_list_items(self):
-        Item.objects.create(text='itemey 1')
-        Item.objects.create(text='itemey 2')
-
-        request = HttpRequest()
-        response = home_page(request)
-
-        self.assertIn('itemey 1', response.content.decode())
-        self.assertIn('itemey 1', response.content.decode())
+    # @skip('nie wyswietlam juz wszystkich list na stronie glownej')
+    # def test_home_page_displays_all_list_items(self):
+    #     Item.objects.create(text='itemey 1')
+    #     Item.objects.create(text='itemey 2')
+    #
+    #     request = HttpRequest()
+    #     response = home_page(request)
+    #
+    #     self.assertIn('itemey 1', response.content.decode())
+    #     self.assertIn('itemey 1', response.content.decode())
 
 class ItemModelTest(TestCase):
 
@@ -80,3 +82,17 @@ class ItemModelTest(TestCase):
         second_saved_item = saved_item[1]
         self.assertEqual(first_saved_item.text, 'Absolutnie pierwszy element listy')
         self.assertEqual(second_saved_item.text, 'Drugi element')
+
+class ListViewTest(TestCase):
+
+    def test_display_all_items(self):
+        Item.objects.create(text='item 1')
+        Item.objects.create(text='item 2')
+
+        ## client djangowy zamiast selenium (bo test jednostkowy)
+        response = self.client.get('/lists/the-only-list-in-the-world/')
+
+        #C#ontains zamiast assertIn bo potrafi wyłuskać dane z response
+        ##  odrazu bez response.content.decode()
+        self.assertContains(response, 'item 1')
+        self.assertContains(response, 'item 2')
