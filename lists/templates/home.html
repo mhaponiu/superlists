@@ -1,15 +1,5 @@
-<html>
-    <head>
-        <title>Listy rzeczy do zrobienia</title>
-    </head>
-    <body>
-        <h1>Utwórz nową listę rzeczy do zrobienia</h1>
+{% extends 'base.html' %}
 
-        <form method="post" action="/lists/new">
-            <p style="text-align: center">
-                <input name='item_text' id="id_new_item" placeholder="Wpisz rzecz do zrobienia"/>
-            </p>
-            {% csrf_token %}
-        </form>
-    </body>
-</html>
+{% block header_text %}Utwórz nową listę rzeczy do zrobienia {% endblock %}
+
+{% block form_action %}/lists/new{% endblock %}

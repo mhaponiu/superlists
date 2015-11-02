@@ -1,12 +1,10 @@
-import unittest
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
-from django.test.testcases import LiveServerTestCase  # dzieki niej django automatycznie tworzy baze testowa
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import time
 
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)  # czeka 3s zanim zacznie testy jesli to potrzebne

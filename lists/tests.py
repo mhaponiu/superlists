@@ -1,9 +1,9 @@
-from unittest.case import skip
 from django.http.request import HttpRequest
 from django.template.loader import render_to_string
 from django.test import TestCase
-from lists.views import home_page
 from django.core.urlresolvers import resolve
+
+from lists.views import home_page
 from lists.models import Item, List
 
 
@@ -121,3 +121,4 @@ class NewListTest(TestCase):
         ## self.assertEqual(response['location'], '/lists/the-only-list-in-the-world/')
         ## to:
         self.assertRedirects(response, '/lists/%d/' % (correct_list.id,))
+
