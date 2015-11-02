@@ -1,10 +1,10 @@
+from django.core.urlresolvers import resolve
 from django.http.request import HttpRequest
 from django.template.loader import render_to_string
 from django.test import TestCase
-from django.core.urlresolvers import resolve
 
-from lists.views import home_page
 from lists.models import Item, List
+from lists.views import home_page
 
 
 class HomePageTest(TestCase):
@@ -19,16 +19,16 @@ class HomePageTest(TestCase):
         expected_html = render_to_string('home.html')
         self.assertEqual(response.content.decode(), expected_html)
 
-    # @skip('nie wyswietlam juz wszystkich list na stronie glownej')
-    # def test_home_page_displays_all_list_items(self):
-    #     Item.objects.create(text='itemey 1')
-    #     Item.objects.create(text='itemey 2')
-    #
-    #     request = HttpRequest()
-    #     response = home_page(request)
-    #
-    #     self.assertIn('itemey 1', response.content.decode())
-    #     self.assertIn('itemey 1', response.content.decode())
+        # @skip('nie wyswietlam juz wszystkich list na stronie glownej')
+        # def test_home_page_displays_all_list_items(self):
+        #     Item.objects.create(text='itemey 1')
+        #     Item.objects.create(text='itemey 2')
+        #
+        #     request = HttpRequest()
+        #     response = home_page(request)
+        #
+        #     self.assertIn('itemey 1', response.content.decode())
+        #     self.assertIn('itemey 1', response.content.decode())
 
 
 class ListAndItemModelTest(TestCase):
@@ -61,23 +61,21 @@ class ListAndItemModelTest(TestCase):
 
 
 class ListViewTest(TestCase):
-
     def test_uses_list_template(self):
         list_ = List.objects.create()
         response = self.client.get('/lists/%d/' % (list_.id,))
         self.assertTemplateUsed(response, 'list.html')
-
 
     def test_display_only_items_fot_that_list(self):
         correct_list = List.objects.create()
         Item.objects.create(text='item 1', list=correct_list)
         Item.objects.create(text='item 2', list=correct_list)
         other_list = List.objects.create()
-        Item.objects.create(text='inny element1', list = other_list)
-        Item.objects.create(text='inny element2', list = other_list)
+        Item.objects.create(text='inny element1', list=other_list)
+        Item.objects.create(text='inny element2', list=other_list)
 
         ## client djangowy zamiast selenium (bo test jednostkowy)
-        response = self.client.get('/lists/%d/'% (correct_list.id))
+        response = self.client.get('/lists/%d/' % (correct_list.id))
 
         ## Contains zamiast assertIn bo potrafi wyłuskać dane z response
         ##  odrazu bez response.content.decode()
@@ -121,4 +119,3 @@ class NewListTest(TestCase):
         ## self.assertEqual(response['location'], '/lists/the-only-list-in-the-world/')
         ## to:
         self.assertRedirects(response, '/lists/%d/' % (correct_list.id,))
-
