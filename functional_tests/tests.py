@@ -88,3 +88,26 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertNotIn('Kupić pawie pióra', page_text)
         self.assertIn('Kupić mleko', page_text)
 
+    def test_layout_and_styling(self):
+        # Edyta przeszla na strone glowna
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # zauważyła, że pole tekstowe zostalo elegancko wysrodkowane
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=5
+        )
+
+        #Edyta utworzyla nowa liste i zobaczyla
+        # ze pole tekstowe nadal jest wysrodkowane
+        inputbox.send_keys('testing\n')
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=5
+        )
+
