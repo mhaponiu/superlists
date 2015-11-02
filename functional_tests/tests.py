@@ -68,7 +68,7 @@ class NewVisitorTest(LiveServerTestCase):
         # Franek odwiedza strone glowna
         # nie znajduje zadnych sladow poprzedniej sesji
         self.browser.get(self.live_server_url)
-        page_text = self.browser.find_elements_by_tag_name('body')
+        page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Kupić pawie pióra', page_text)
         self.assertNotIn('zrobienia przynęty', page_text)
 
@@ -84,7 +84,7 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertNotEqual(franek_list_url, edyta_list_url)
 
         # tylko lista Franka jest, bez danych Edyty
-        page_text = self.browser.find_elements_by_tag_name('body').text
+        page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Kupić pawie pióra', page_text)
         self.assertIn('Kupić mleko', page_text)
 

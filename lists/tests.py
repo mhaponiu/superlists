@@ -61,45 +61,63 @@ class ListAndItemModelTest(TestCase):
 
 
 class ListViewTest(TestCase):
+
     def test_uses_list_template(self):
-        response = self.client.get('/lists/the-only-list-in-the-world/')
+        list_ = List.objects.create()
+        response = self.client.get('/lists/%d/' % (list_.id,))
         self.assertTemplateUsed(response, 'list.html')
 
-    def test_display_all_items(self):
-        list_ = List.objects.create()
-        Item.objects.create(text='item 1', list = list_)
-        Item.objects.create(text='item 2', list = list_)
+
+    def test_display_only_items_fot_that_list(self):
+        correct_list = List.objects.create()
+        Item.objects.create(text='item 1', list=correct_list)
+        Item.objects.create(text='item 2', list=correct_list)
+        other_list = List.objects.create()
+        Item.objects.create(text='inny element1', list = other_list)
+        Item.objects.create(text='inny element2', list = other_list)
 
         ## client djangowy zamiast selenium (bo test jednostkowy)
-        response = self.client.get('/lists/the-only-list-in-the-world/')
+        response = self.client.get('/lists/%d/'% (correct_list.id))
 
         ## Contains zamiast assertIn bo potrafi wyłuskać dane z response
         ##  odrazu bez response.content.decode()
         self.assertContains(response, 'item 1')
         self.assertContains(response, 'item 2')
+        self.assertNotContains(response, 'inny element1')
+        self.assertNotContains(response, 'inny element2')
+
+    def test_passes_correct_list_to_template(self):
+        other_list = List.objects.create()
+        correct_list = List.objects.create()
+        response = self.client.get('/lists/%d/' % (correct_list.id,))
+        self.assertEqual(response.context['list'], correct_list)
 
 
 class NewListTest(TestCase):
-    def test_saving_saving_a_POST_request(self):
+    def test_can_save_a_POST_request_to_an_existing_file(self):
+        other_list = List.objects.create()
+        correct_list = List.objects.create()
         ## zamiast tego:
         ##   request = HttpRequest()
         ##   request.method = 'POST'
         ##   request.POST['item_text'] = 'Nowy element listy'
         ##   response = home_page(request)
         ## client.post
-
-        self.client.post('/lists/new',
+        self.client.post('/lists/%d/add_item' % (correct_list.id,),
                          data={'item_text': 'Nowy element listy'})
 
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, 'Nowy element listy')
+        self.assertEqual(new_item.list, correct_list)
 
     def test_redirects_after_POST(self):
-        response = self.client.post('/lists/new',
+        other_list = List.objects.create()
+        correct_list = List.objects.create()
+        response = self.client.post('/lists/%d/add_item' % (correct_list.id,),
                                     data={'item_text': 'Nowy element listy'})
         ## zamiast recznego sprawdzenia czy przekierowanie nastapilo:
         ## self.assertEqual(response.status_code, 302) 302 - status 'poprawnego przekierowania'
         ## self.assertEqual(response['location'], '/lists/the-only-list-in-the-world/')
         ## to:
-        self.assertRedirects(response, '/lists/the-only-list-in-the-world/')
+        self.assertRedirects(response, '/lists/%d/' % (correct_list.id,))
